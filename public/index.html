@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>운동 기록</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>운동 기록</h1>
+    </header>
+
+    <nav id="tabs">
+      <button class="tab active" data-tab="record">기록</button>
+      <button class="tab" data-tab="trend">추이</button>
+      <button class="tab" data-tab="history">지난 운동</button>
+      <button class="tab" data-tab="calendar">달력</button>
+    </nav>
+
+    <main>
+      <!-- 기록 탭 -->
+      <section id="tab-record" class="tab-content active">
+        <div id="today-records"></div>
+      </section>
+
+      <!-- 추이 탭 -->
+      <section id="tab-trend" class="tab-content">
+        <div class="trend-controls">
+          <select id="trend-exercise"></select>
+        </div>
+        <div class="chart-container">
+          <canvas id="trend-chart"></canvas>
+        </div>
+        <div id="trend-detail"></div>
+      </section>
+
+      <!-- 지난 운동 탭 -->
+      <section id="tab-history" class="tab-content">
+        <div class="history-nav">
+          <button id="history-prev">&larr;</button>
+          <span id="history-date">-</span>
+          <button id="history-next">&rarr;</button>
+        </div>
+        <div id="history-records"></div>
+      </section>
+
+      <!-- 달력 탭 -->
+      <section id="tab-calendar" class="tab-content">
+        <div class="calendar-nav">
+          <button id="cal-prev">&larr;</button>
+          <span id="cal-month">-</span>
+          <button id="cal-next">&rarr;</button>
+        </div>
+        <div id="calendar-grid"></div>
+        <div id="calendar-detail"></div>
+      </section>
+    </main>
+
+    <!-- 하단 고정 입력창 -->
+    <footer id="input-bar">
+      <div id="autocomplete-area" class="hidden"></div>
+      <div id="parse-preview" class="hidden"></div>
+      <div class="input-row">
+        <input type="text" id="workout-input" placeholder="암컬 20 13회" autocomplete="off">
+        <button id="mic-btn" title="음성 입력">🎤</button>
+        <button id="save-btn">저장</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 수정 모달 -->
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>기록 수정</h3>
+      <label>운동명<input type="text" id="edit-name"></label>
+      <label>중량/강도<input type="text" id="edit-weight"></label>
+      <label>횟수<input type="number" id="edit-reps"></label>
+      <div class="modal-actions">
+        <button id="edit-delete" class="btn-danger">삭제</button>
+        <button id="edit-cancel">취소</button>
+        <button id="edit-save" class="btn-primary">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
