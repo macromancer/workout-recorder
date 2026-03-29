@@ -5,6 +5,8 @@ let historyDate = null;
 let calendarMonth = new Date().toISOString().slice(0, 7);
 let calendarWorkoutDays = [];
 let trendChart = null;
+let currentRecommendation = null;
+let recTapTimer = null;
 
 // ===== API helpers =====
 async function api(path, options = {}) {
@@ -28,6 +30,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     inputBar.style.display = tab.dataset.tab === 'record' ? '' : 'none';
 
     // Load tab data
+    if (tab.dataset.tab === 'record') loadRecommendation();
     if (tab.dataset.tab === 'trend') loadTrend();
     if (tab.dataset.tab === 'history') loadHistory();
     if (tab.dataset.tab === 'calendar') loadCalendar();
@@ -84,6 +87,8 @@ async function saveWorkout() {
   hideAutocomplete();
   loadTodayRecords();
   loadExercises();
+  loadRecommendation();
+  loadRecommendation();
 }
 
 // ===== Parse Preview =====
@@ -553,6 +558,51 @@ document.getElementById('cal-next').addEventListener('click', () => {
   const d = new Date(y, m, 1);
   calendarMonth = d.toISOString().slice(0, 7);
   loadCalendar();
+});
+
+// ===== Recommendation Banner =====
+async function loadRecommendation() {
+  const banner = document.getElementById('recommendation-banner');
+  const data = await api('/workouts/next-recommendation');
+
+  if (!data.recommendation) {
+    banner.classList.add('hidden');
+    currentRecommendation = null;
+    return;
+  }
+
+  currentRecommendation = data.recommendation;
+  const r = currentRecommendation;
+  banner.innerHTML = `
+    <div>
+      <div class="rec-label">다음 운동</div>
+      <div class="rec-text">${r.rawText}</div>
+    </div>
+    <div class="rec-set">${r.setNumber}/${r.totalSets}세트</div>
+  `;
+  banner.classList.remove('hidden');
+}
+
+document.getElementById('recommendation-banner').addEventListener('click', () => {
+  if (!currentRecommendation) return;
+
+  if (recTapTimer) {
+    // Double tap — save immediately
+    clearTimeout(recTapTimer);
+    recTapTimer = null;
+    workoutInput.value = currentRecommendation.rawText;
+    saveWorkout();
+  } else {
+    // Single tap — fill input, wait for possible double tap
+    workoutInput.value = currentRecommendation.rawText;
+    updateParsePreview();
+    hideAutocomplete();
+    workoutInput.focus();
+
+    recTapTimer = setTimeout(() => {
+      recTapTimer = null;
+    }, 300);
+  }
 });
 
 // ===== Init =====
