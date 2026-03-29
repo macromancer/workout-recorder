@@ -230,6 +230,44 @@ main {
   display: none;
 }
 
+/* Recommendation banner */
+#recommendation-banner {
+  background: var(--primary);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#recommendation-banner:active {
+  background: var(--primary-dark);
+}
+
+#recommendation-banner.hidden {
+  display: none;
+}
+
+#recommendation-banner .rec-label {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+#recommendation-banner .rec-text {
+  font-weight: 600;
+}
+
+#recommendation-banner .rec-set {
+  font-size: 12px;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
 .autocomplete-item {
   padding: 6px 0;
   cursor: pointer;
