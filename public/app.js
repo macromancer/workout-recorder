@@ -201,9 +201,14 @@ async function updateAutocomplete() {
   area.classList.remove('hidden');
 
   area.querySelectorAll('.autocomplete-item').forEach(item => {
-    item.addEventListener('click', () => {
+    item.addEventListener('click', async () => {
       const name = item.dataset.name;
-      workoutInput.value = name + ' ';
+      const latest = await api(`/workouts/latest?exercise=${encodeURIComponent(name)}`);
+      if (latest.records.length > 0 && latest.records[0].rawText) {
+        workoutInput.value = latest.records[0].rawText;
+      } else {
+        workoutInput.value = name + ' ';
+      }
       workoutInput.focus();
       updateParsePreview();
       showLastRecord(name);
