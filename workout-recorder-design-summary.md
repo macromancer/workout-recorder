@@ -104,6 +104,10 @@ CREATE TABLE workouts (
 ### 1. 기록 탭 (메인)
 - **하단 고정 입력창** + 마이크 버튼(음성 입력)
 - 입력 시 운동명 자동완성 + 지난번 기록 표시 (선택 시 전체 문장 자동 입력)
+- **추천 배너**: 입력창 위에 다음 운동 추천 표시 (지난 운동 순서 기반)
+  - 1탭: 입력창에 추천 문장 채움
+  - 더블탭: 즉시 저장
+  - 모든 운동 완료 시 자동 숨김
 - 파싱 미리보기 (운동: 암컬 | 중량: 20 | 횟수: 13)
 - 오늘 기록이 시간순으로 표시 (세트 번호 포함)
 - 항목 탭하면 수정 모달 (운동명/중량/횟수 수정, 삭제)
@@ -163,6 +167,7 @@ CREATE TABLE workouts (
 | GET | /api/workouts/next-day?after= | 다음 운동일 조회 |
 | PUT | /api/workouts/:id | 기록 수정 |
 | DELETE | /api/workouts/:id | 기록 삭제 |
+| GET | /api/workouts/next-recommendation | 다음 운동 추천 |
 | GET | /api/exercises | 운동명 목록 (자동완성용) |
 
 ---
@@ -208,3 +213,4 @@ CREATE TABLE workouts (
 | 2026-03-29 | Claude Code CLI Telegram 채널 연결 (원격 개발용) |
 | 2026-03-29 | GitHub 저장소 생성 및 코드 push (macromancer/workout-recorder) |
 | 2026-03-29 | 자동완성 개선: 지난 운동 선택 시 운동명만이 아닌 전체 문장(rawText) 입력 |
+| 2026-03-29 | 다음 운동 추천 기능 추가 (배너 UI, 탭/더블탭, 순서 패턴 기반) |
