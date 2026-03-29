@@ -213,4 +213,63 @@ router.get('/workouts/next-day', (req, res) => {
   res.json({ date: row.date, records });
 });
 
+// GET /api/workouts/next-recommendation — 다음 운동 추천
+router.get('/workouts/next-recommendation', (req, res) => {
+  const today = new Date().toLocaleDateString('sv-SE');
+
+  // 1. Find most recent workout day (before today)
+  const lastDateRow = db.prepare(
+    'SELECT DISTINCT date FROM workouts WHERE date < ? ORDER BY date DESC LIMIT 1'
+  ).get(today);
+
+  if (!lastDateRow) {
+    return res.json({ recommendation: null });
+  }
+
+  const lastDate = lastDateRow.date;
+
+  // 2. Get last day's exercise order (by first appearance in createdAt)
+  const lastDayRecords = db.prepare(
+    'SELECT exerciseName, rawText, setNumber FROM workouts WHERE date = ? ORDER BY createdAt ASC'
+  ).all(lastDate);
+
+  const exerciseOrder = [];
+  const exerciseInfo = {};
+  for (const r of lastDayRecords) {
+    if (!exerciseInfo[r.exerciseName]) {
+      exerciseOrder.push(r.exerciseName);
+      exerciseInfo[r.exerciseName] = { totalSets: 0, rawText: r.rawText };
+    }
+    exerciseInfo[r.exerciseName].totalSets++;
+  }
+
+  // 3. Get today's records to find completed exercises
+  const todayRecords = db.prepare(
+    'SELECT exerciseName, COUNT(*) as setsDone FROM workouts WHERE date = ? GROUP BY exerciseName'
+  ).all(today);
+
+  const todaySets = {};
+  for (const r of todayRecords) {
+    todaySets[r.exerciseName] = r.setsDone;
+  }
+
+  // 4. Find first incomplete exercise in order
+  for (const name of exerciseOrder) {
+    const done = todaySets[name] || 0;
+    const total = exerciseInfo[name].totalSets;
+    if (done < total) {
+      return res.json({
+        recommendation: {
+          exerciseName: name,
+          rawText: exerciseInfo[name].rawText,
+          setNumber: done + 1,
+          totalSets: total,
+        },
+      });
+    }
+  }
+
+  res.json({ recommendation: null });
+});
+
 module.exports = router;
